@@ -5,7 +5,7 @@ const ConnectDatabse = require("./database/db")
 
 dotenv.config()
 
-app.listen(5000,async()=>{
+app.listen(process.env.PORT,async()=>{
     await ConnectDatabse()
     console.log("app is running port 5000")
 })

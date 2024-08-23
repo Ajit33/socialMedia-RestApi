@@ -3,6 +3,7 @@ const User = require("../models/User")
 const route=express.Router()
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
+
 //signup
 
 route.post("/signup", async (req, res) => { 
@@ -72,10 +73,11 @@ route.post("/signin", async (req, res) => {
       expiresIn: process.env.JWT_EXPIRE,
     });
 
-    res.cookie("token", token, { httpOnly: true }).status(200).json({
+    res.cookie("token", token, { httpOnly: true,secure:true }).status(200).json({
       message: "Sign in successfully!",
       data: userData,
     });
+    console.log(token)
   } catch (error) {
     res.status(500).json({
       message: "An error occurred",
@@ -86,9 +88,46 @@ route.post("/signin", async (req, res) => {
 
 
 //signout
-
+route.get("/signout",async(req,res)=>{
+  try {
+  res.clearCookie("token",{sameSite:true ,secure:true}).status(200).json({
+    message:"Logout Sucessfully !"
+  })
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+  }
+)}
+} 
+)
 
 //fetch current user
 
+route.get("/fetchUser",async(req,res)=>{
+  console.log(req.cookies.token)
+  const token=req.cookies.token;
+
+  jwt.verify(token,process.env.SECRET_KEY,{},async(err,data)=>{
+    if(err){
+      res.status(403).json({
+        message: err.message
+      })
+    }
+    try {
+      const id=data._id;
+      const user=await User.findOne({_id:id})
+      res.status(200).json({
+        data:user
+      })
+    } catch (error) {
+      res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+    }
+  )
+    }
+  })
+})
 
 module.exports=route

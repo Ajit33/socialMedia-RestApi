@@ -4,11 +4,17 @@ const dotenv = require("dotenv");
 const ConnectDatabase = require("./database/db");
 const rootRouter = require("./routes/index");
 const cookieParser=require("cookie-parser")
+const {errorHandler}=require("./middlewares/error")
+
+
+
+
 dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser())
 app.use("/api/v1", rootRouter);
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000;
 

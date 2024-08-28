@@ -219,6 +219,41 @@ const searchUserContoller=async(req,res,next)=>{
     }
 }
 
+const generateFileUrl=(filename)=>{
+  return process.env.URL+`/uploads/${filename}`
+}
+
+const uploadProfilePictureController=async(req,res,next)=>{
+   const {userId}=req.params
+   const {filename}=req.file
+   console.log(filename)
+   try {
+     const user=await User.findByIdAndUpdate(userId,{profilepicture:generateFileUrl(filename)},{new:true})
+     if(!user){
+      throw new CustomError("User not found ! ",404)
+     }
+     res.status(200).json({message:"Profile picture updated sucessfully!",user})
+   } catch (error) {
+     next(error)
+   }
+}
+const uploadCoverPictureController=async(req,res,next)=>{
+   const {userId}=req.params
+   const {filename}=req.file
+   console.log(filename)
+   try {
+     const user=await User.findByIdAndUpdate(userId,{coverpicture:generateFileUrl(filename)},{new:true})
+     if(!user){
+      throw new CustomError("User not found ! ",404)
+     }
+     res.status(200).json({message:"Cover picture updated sucessfully!",user})
+   } catch (error) {
+     next(error)
+   }
+}
+
+
+
 module.exports = {
   getUserController,
   updateUserController,
@@ -228,5 +263,7 @@ module.exports = {
   unblockUserController,
   blockListUserController,
   deleteUserController,
-  searchUserContoller
+  searchUserContoller,
+  uploadProfilePictureController,
+  uploadCoverPictureController
 };
